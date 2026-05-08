@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Miles Away</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <style>
+        /* Force reset global body styles that break the login page */
+        html, body {
+            padding-top: 0 !important;
+            margin: 0 !important;
+            background-color: #ffffff !important;
+            height: 100%;
+        }
+        header { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="login-shell">
+
+    <!-- Left decorative panel -->
+    <div class="login-panel-left">
+        <div class="panel-texture"></div>
+        <div class="panel-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="panel-brand">
+            <div class="panel-brand-name">Miles <em>Away</em></div>
+            <div class="panel-tagline">Travels · Memories · Milestones</div>
+        </div>
+    </div>
+
+    <!-- Login form -->
+    <div class="login-panel-right">
+        <div class="login-box">
+            <div class="login-eyebrow">Admin Area</div>
+            <h1 class="login-title">Welcome<br>back.</h1>
+            <p class="login-sub">Sign in to manage your posts, destinations, and gallery.</p>
+
+            <div class="login-error" id="login-error"></div>
+
+            <div class="field">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+            </div>
+
+            <div class="field">
+                <label for="login-password">Password</label>
+                <div class="pw-wrap">
+                    <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+                    <button class="pw-toggle" id="pw-toggle" type="button" aria-label="Toggle password visibility">👁</button>
+                </div>
+            </div>
+
+            <button class="btn-login" id="btn-login">
+                <span class="btn-text">Sign In</span>
+                <span class="spinner"></span>
+            </button>
+
+            <a href="../index.html" class="login-back">← Back to Miles Away</a>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { supabase } from "../js/supabase.js";
+
+    // Already logged in? Skip to admin.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) window.location.replace("admin.html");
+
+    // Password toggle
+    const pwInput  = document.getElementById('login-password');
+    const pwToggle = document.getElementById('pw-toggle');
+    pwToggle.addEventListener('click', () => {
+        const isHidden = pwInput.type === 'password';
+        pwInput.type         = isHidden ? 'text' : 'password';
+        pwToggle.textContent = isHidden ? '🙈' : '👁';
+    });
+
+    // Login logic
+    const btn      = document.getElementById('btn-login');
+    const errorBox = document.getElementById('login-error');
+
+    const showError = msg => { errorBox.textContent = msg; errorBox.classList.add('show'); };
+    const hideError = ()  => errorBox.classList.remove('show');
+
+    async function doLogin() {
+        const email    = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        hideError();
+        if (!email || !password) { showError('Please enter your email and password.'); return; }
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            showError(error.message || 'Login failed. Please try again.');
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        } else {
+            window.location.replace("admin.html");
+        }
+    }
+
+    btn.addEventListener('click', doLogin);
+    document.getElementById('login-email').addEventListener('keydown',    e => e.key === 'Enter' && doLogin());
+    document.getElementById('login-password').addEventListener('keydown', e => e.key === 'Enter' && doLogin());
+</script>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me | Miles Away</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <h1><a href="../index.html" class="brand">Miles Away</a></h1>
+        <div class="navigation">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="navigation-items" id="nav-menu">
+                <a href="../index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="destinations.html">Destinations</a>
+                <a href="about.html" style="color: var(--dark-pink);">About</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('open');
+                hamburger.classList.toggle('active');
+            });
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('open');
+                    hamburger.classList.remove('active');
+                });
+            });
+        </script>
+    </header>
+
+
+    <!-- BANNER -->
+    <section class="about-banner">
+        <img src="../media/about-me-banner.png" alt="About banner" class="about-banner-img">
+        <div class="about-banner-text">
+            <span class="eyebrow">MILES AWAY</span>
+            <h1>About Me</h1>
+            <p>The person behind the passport stamps and café orders.</p>
+        </div>
+    </section>
+
+
+    <!-- INTRO -->
+    <section class="about-intro">
+
+        <!-- PHOTO COLLAGE -->
+        <div class="about-photos">
+
+            <!-- ROW 1 -->
+            <div class="polaroid-row">
+                <img src="../media/about-author.png" alt="Mikaela" class="about-photo-main">
+                <img src="../media/about2.png" alt="Travel" class="about-photo-secondary">
+            </div>
+
+            <!-- ROW 2 -->
+            <div class="polaroid-row">
+                <img src="../media/about3.png" alt="Mikaela" class="about-photo-main">
+                <img src="../media/about4.png" alt="Mikaela" class="about-photo-secondary">
+            </div>
+
+            <!-- ROW 3 -->
+            <div class="polaroid-row">
+                <img src="../media/about5.png" alt="Mikaela" class="about-photo-main">
+                <img src="../media/about6.png" alt="Mikaela" class="about-photo-secondary">
+            </div>
+
+        </div>
+
+        <!-- TEXT -->
+        <div class="about-text-block">
+            <span class="eyebrow">Hello!</span>
+            <h2>I'm Maria Mikaela N. Durana</h2>
+
+            <p>
+                Welcome to my blog, and thank you for stopping by.<br><br>
+
+                I currently live in Tayabas City, Quezon Province. I study at Southern Luzon State University, where I
+                am a second-year BS Computer Engineering student and a beginner programmer.<br><br>
+
+                I started Miles Away as a personal blog project for one of my courses. What began as a requirement
+                eventually became something I wanted to keep. As I continue to explore more
+                destinations and experiences, I hope to grow this blog with me.<br><br>
+
+                Miles Away is my little corner of the internet. It is part travel diary, part reflection, and part love
+                letter to the places that have left a mark on me. I write about local trips around the Philippines,
+                occasional international experiences, food that is worth the detour, and the quiet, unplanned moments
+                that often become the most meaningful parts of any journey.<br><br>
+
+                So far, I have only traveled internationally to Thailand twice, once in September 2019 and again in
+                August 2025. I may not have seen much of the world yet, but it remains one of my biggest goals in life
+                to explore it, one place at a time. For now, I write from where I am in Quezon Province, Philippines,
+                where many of my stories begin, often alongside my family and friends.<br><br>
+
+                Traveling became possible for me mainly because of them. My family has always loved going out, whether
+                it is visiting new places or simply trying different restaurants. Those small trips, especially with my
+                eldest brother leading the way, slowly shaped my love for exploring.<br><br>
+
+                We may not live a luxurious life, but we are fortunate enough to experience travel in our own way. For
+                us, it is a form of rest, joy, and connection. It is not about extravagance, but about shared moments,
+                laughter, and the simple act of being somewhere new together.<br><br>
+
+                I have always looked up to my brothers, who are able to travel more often through their hard work and
+                dedication. They have shown me that exploring the world is something you build towards and learn to
+                appreciate deeply.<br><br>
+
+                A special thank you to my eldest brother, <strong>Giovanni</strong>, and my second brother,
+                <strong>Dominic</strong>, for making many of these experiences possible. This blog exists in part
+                because of the opportunities they have given me to see more beyond what I once thought I could.<br><br>
+
+                I am not a professional traveler. I am simply someone who saves up, plans when I can, and goes when the
+                opportunity comes. I also keep a growing list of places I hope to visit someday, and slowly, I am
+                working my way through it.<br><br>
+
+                If anything here resonates with you, I hope it inspires you to take your own trip, no matter how near or
+                far.
+            </p>
+
+            <a href="contact.html" class="btn-read" style="text-decoration:none;">SAY HELLO →</a>
+        </div>
+
+    </section>
+
+
+    <!-- TRAVEL PHILOSOPHY -->
+    <section class="about-philosophy">
+        <div class="philosophy-quote">
+            <blockquote>
+                Travel isn't always pretty. It isn't always comfortable.
+                But that's okay. The journey changes you — and that's the point.
+            </blockquote>
+            <cite>— something I remind myself before every trip</cite>
+        </div>
+        <div class="philosophy-text">
+            <h3>Why I Travel</h3>
+            <p>
+                I travel because staying at home often leaves me feeling restless. I find myself scrolling through
+                social media, seeing beautiful places and experiences shared by others, and craving the chance to see
+                those sceneries with my own eyes and taste the food for myself. There is something different about being
+                physically present in a place that no photo or video can fully capture. Each trip gives me a new
+                perspective,
+                whether it is through the people I meet, the culture I observe, or the small moments that stay with
+                me long after I return home.<br><br>
+
+                And I write about it because memory fades, but words last longer. I would describe myself as someone who
+                can be forgetful, and I would hate to lose the memories of my travels and experiences as time passes.
+                Through this blog, I want to preserve every moment as much as I can, to hold onto the feelings, lessons,
+                and details that made each journey special.
+            </p>
+        </div>
+    </section>
+
+
+    <!-- PHOTO STRIP -->
+    <div class="about-gallery-strip">
+        <div class="strip-item">
+            <img src="../media/gal1.png" alt="Travel moment 1" class="strip-img">
+        </div>
+        <div class="strip-item">
+            <img src="../media/gal2.png" alt="Travel moment 2" class="strip-img">
+        </div>
+        <div class="strip-item">
+            <img src="../media/gal3.png" alt="Travel moment 3" class="strip-img">
+        </div>
+        <div class="strip-item">
+            <img src="../media/gal4.png" alt="Travel moment 4" class="strip-img">
+        </div>
+        <div class="strip-item">
+            <img src="../media/gal5.png" alt="Travel moment 5" class="strip-img">
+        </div>
+    </div>
+
+
+    <!-- FUN FACTS -->
+    <section class="about-fun">
+        <h2 class="section-heading">A Few Things About Me</h2>
+        <div class="fun-grid">
+            <div class="fun-item">
+                <span class="fun-number">01</span>
+                <div>
+                    <h4>I often travel with my family</h4>
+                    <p>Which means I'm not the one in charge… but I'm definitely the one taking all the pictures.</p>
+                </div>
+            </div>
+            <div class="fun-item">
+                <span class="fun-number">02</span>
+                <div>
+                    <h4>I write down what I need to bring</h4>
+                    <p>Because if I trust my memory, I will forget something important and remember it exactly 5 minutes
+                        after leaving.</p>
+                </div>
+            </div>
+            <div class="fun-item">
+                <span class="fun-number">03</span>
+                <div>
+                    <h4>I'm always checking the weather</h4>
+                    <p>Not for fun, but to avoid suffering. I need to know if I'm dressing for sunshine, rain, or
+                        surprise chaos.</p>
+                </div>
+            </div>
+            <div class="fun-item">
+                <span class="fun-number">04</span>
+                <div>
+                    <h4>I take too many photos of everything</h4>
+                    <p>Food, walls, random streets… and yes, myself too. I'm camera shy but also camera dependent. It's
+                        complicated.
+                    </p>
+                </div>
+            </div>
+            <div class="fun-item">
+                <span class="fun-number">05</span>
+                <div>
+                    <h4>There will always be food</h4>
+                    <p>If it looks questionable, I'm probably trying it. For the experience. And forda story. Kahit
+                        natalon pa 'yan</p>
+                </div>
+            </div>
+            <div class="fun-item">
+                <span class="fun-number">06</span>
+                <div>
+                    <h4>I always buy pasalubong</h4>
+                    <p>Even when I don't need to. Even when my bag is full.
+                        It's for my friends… and also my lack of self-control (anak ng mayaman yarn?).</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- CTA -->
+    <section class="about-cta">
+        <h2>Let's Connect</h2>
+        <p>Whether you want to say hi, share a travel tip, or just talk about good cafés — my inbox is always open.</p>
+        <div class="cta-buttons">
+            <a href="contact.html" class="btn-cta-primary">SEND A MESSAGE</a>
+            <a href="blog.html" class="btn-cta-outline">READ THE BLOG</a>
+        </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook"
+                    target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram"
+                    target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon"
+                    aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube"
+                    target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>

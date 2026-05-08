@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Miles Away</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <h1><a href="../index.html" class="brand">Miles Away</a></h1>
+        <div class="navigation">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="navigation-items" id="nav-menu">
+                <a href="../index.html">Home</a>
+                <a href="blog.html" style="color: var(--dark-pink);">Blog</a>
+                <a href="destinations.html">Destinations</a>
+                <a href="about.html">About</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            hamburger.addEventListener('click', () => { navMenu.classList.toggle('open'); hamburger.classList.toggle('active'); });
+            navMenu.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { navMenu.classList.remove('open'); hamburger.classList.remove('active'); }); });
+        </script>
+    </header>
+
+    <section class="blog-banner">
+        <img src="../media/blog-banner.png" class="blog-banner-img" alt="Blog Banner">
+
+        <div class="blog-banner-text">
+            <span class="eyebrow">MILES AWAY</span>
+            <h1>The Blog</h1>
+            <p>Stories from the road, hidden cafés, family trips, and everything in between.</p>
+        </div>
+    </section>
+
+    <main class="blog-main">
+
+
+        <h2 class="blog-grid-heading">All Posts</h2>
+        <div class="blog-filter-tabs">
+            <button class="blog-filter-btn active" data-filter="all">All</button>
+            <button class="blog-filter-btn" data-filter="Food">Food</button>
+            <button class="blog-filter-btn" data-filter="For Fun">For Fun</button>
+        </div>
+        <div class="blog-posts-grid" id="posts-grid">
+            <div class="blog-loading">Loading posts...</div>
+        </div>
+
+        <div class="pagination" id="pagination" style="display:none;">
+            <button class="page-btn" id="prev-btn">← PREV</button>
+            <span class="page-info" id="page-info"></span>
+            <button class="page-btn" id="next-btn">NEXT →</button>
+        </div>
+    </main>
+
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook"
+                    target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram"
+                    target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon"
+                    aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube"
+                    target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { getAll, formatDate } from "../js/supabase.js";
+
+        const latestWrap = document.getElementById('latest-post-wrap');
+        const grid = document.getElementById('posts-grid');
+        const pagination = document.getElementById('pagination');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageInfo = document.getElementById('page-info');
+
+        const PER_PAGE = 6;
+        let allPosts = [];
+        let filteredPosts = [];
+        let page = 0;
+        let currentFilter = 'all';
+
+        function cardLink(post) { return `post.html?col=blogs&id=${post.id}`; }
+
+
+
+        function renderPage(idx) {
+            page = idx;
+            const slice = filteredPosts.slice(idx * PER_PAGE, (idx + 1) * PER_PAGE);
+            grid.innerHTML = slice.length ? slice.map(post => `
+                <a href="${cardLink(post)}" class="blog-card">
+                    <div class="blog-card-img-wrap">
+                        <img src="${post.cover_image || ''}" alt="${post.title}" class="blog-card-img"
+                             onerror="this.style.background='var(--lavender-mid)';this.removeAttribute('src')">
+                    </div>
+                    <div class="blog-card-body">
+                        <span class="blog-card-date">${formatDate(post.post_date || post.created_at)}</span>
+                        <h3>${post.title}</h3>
+                        <p>${post.preview || ''}</p>
+                        <span class="btn-read">READ MORE</span>
+                    </div>
+                </a>`).join('') : '<p class="blog-loading">No posts in this category yet.</p>';
+            const totalPages = Math.ceil(filteredPosts.length / PER_PAGE);
+            pageInfo.textContent = totalPages > 1 ? `Page ${idx + 1} of ${totalPages}` : '';
+            prevBtn.disabled = idx === 0;
+            nextBtn.disabled = idx >= totalPages - 1;
+            pagination.style.display = filteredPosts.length > PER_PAGE ? 'flex' : 'none';
+        }
+
+        function applyFilter(filter) {
+            currentFilter = filter;
+            filteredPosts = filter === 'all' ? allPosts : allPosts.filter(p => p.category === filter);
+            renderPage(0);
+        }
+
+        // ── wrapped in async function — fixes illegal return ──
+        async function loadBlog() {
+            try {
+                allPosts = await getAll('blogs');
+                if (allPosts.length === 0) {
+                    grid.innerHTML = '<p class="blog-loading">No posts yet. Check back soon!</p>';
+                    return;
+                }
+                filteredPosts = allPosts;
+                renderPage(0);
+                if (allPosts.length > PER_PAGE) {
+                    prevBtn.addEventListener('click', () => { renderPage(page - 1); window.scrollTo(0, grid.offsetTop - 120); });
+                    nextBtn.addEventListener('click', () => { renderPage(page + 1); window.scrollTo(0, grid.offsetTop - 120); });
+                }
+
+                document.querySelectorAll('.blog-filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.blog-filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        applyFilter(btn.dataset.filter);
+                    });
+                });
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<p class="blog-loading">Could not load posts.</p>';
+            }
+        }
+
+        loadBlog();
+    </script>
+</body>
+
+</html>

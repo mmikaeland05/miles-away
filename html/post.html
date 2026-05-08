@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post | Miles Away</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <h1><a href="../index.html" class="brand">Miles Away</a></h1>
+        <div class="navigation">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="navigation-items" id="nav-menu">
+                <a href="../index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="destinations.html">Destinations</a>
+                <a href="about.html">About Me</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const navMenu   = document.getElementById('nav-menu');
+            hamburger.addEventListener('click', () => { navMenu.classList.toggle('open'); hamburger.classList.toggle('active'); });
+            navMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => { navMenu.classList.remove('open'); hamburger.classList.remove('active'); }));
+        </script>
+    </header>
+
+    <section class="post-hero">
+        <img src="" alt="" class="post-hero-img" id="post-hero-img">
+        <div class="post-hero-text">
+            <div class="post-meta">
+                <span class="post-category-badge" id="post-category"></span>
+                <span class="post-date-label"     id="post-date"></span>
+            </div>
+            <h1 class="post-hero-title" id="post-title">Loading...</h1>
+        </div>
+    </section>
+
+    <article class="post-body">
+        <div class="post-content-wrap">
+            <a href="#" class="post-back" id="back-link">← Back</a>
+            <div class="post-content" id="post-content">
+                <div class="post-loading">Loading article...</div>
+            </div>
+            <hr class="post-divider">
+            <a href="#" class="btn-read" id="back-btn" style="text-decoration:none;">← ALL POSTS</a>
+        </div>
+    </article>
+
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+            <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon" aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { getOne, formatDate } from "../js/supabase.js";
+
+        const params = new URLSearchParams(window.location.search);
+        const col    = params.get('col') || 'blogs';  // blogs | destinations
+        const id     = params.get('id');
+
+        const backHref = col === 'destinations' ? 'destinations.html' : 'blog.html';
+        document.getElementById('back-link').href = backHref;
+        document.getElementById('back-btn').href  = backHref;
+
+        if (!id) {
+            document.getElementById('post-title').textContent  = 'Post not found.';
+            document.getElementById('post-content').innerHTML  = '<p><a href="blog.html">Go back to the blog.</a></p>';
+        } else {
+            try {
+                const post = await getOne(col, id);
+                if (!post) throw new Error('not found');
+
+                document.title = post.title + ' | Miles Away';
+
+                // Hero — Supabase uses snake_case: cover_image
+                const heroImg = document.getElementById('post-hero-img');
+                heroImg.src = post.cover_image || '';
+                heroImg.alt = post.title;
+                document.getElementById('post-category').textContent = post.type || post.category || '';
+                document.getElementById('post-date').textContent     = formatDate(post.post_date || post.created_at);
+                document.getElementById('post-title').textContent    = post.title;
+
+                // Build article from sections array (stored as JSONB in Supabase)
+                const contentEl = document.getElementById('post-content');
+                if (post.sections && post.sections.length) {
+                    contentEl.innerHTML = post.sections.map(sec => {
+                        let html = '';
+                        if (sec.para)      html += `<p>${sec.para}</p>`;
+                        if (sec.imageUrl)  html += `<img src="${sec.imageUrl}" alt="" class="section-img">`;
+                        return html;
+                    }).join('');
+                } else {
+                    contentEl.innerHTML = '<p>No content available.</p>';
+                }
+
+            } catch(err) {
+                document.getElementById('post-title').textContent  = 'Post not found.';
+                document.getElementById('post-content').innerHTML  = '<p><a href="blog.html">Go back to the blog.</a></p>';
+            }
+        }
+    </script>
+</body>
+</html>

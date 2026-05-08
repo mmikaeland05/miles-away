@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Miles Away</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ── AUTH GUARD — redirects to login if no Supabase session ── -->
+    <script type="module">
+        import { supabase } from "../js/supabase.js";
+        document.body.style.visibility = 'hidden';
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.replace("admin-login.html");
+        } else {
+            document.body.style.visibility = 'visible';
+        }
+        supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_OUT') window.location.replace("admin-login.html");
+        });
+    </script>
+
+    <div class="admin-wrap">
+        <div class="admin-header">
+            <h1>Miles Away Admin</h1>
+            <div style="display:flex;align-items:center;gap:20px;">
+                <a href="../index.html">← Back to site</a>
+                <button id="logout-btn" style="background:none;border:1.5px solid #c0392b;color:#c0392b;padding:6px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.82rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s;">Logout</button>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="blog">Blog Post</button>
+            <button class="admin-tab" data-tab="destination">Destination</button>
+            <button class="admin-tab" data-tab="gallery">Gallery Photo</button>
+            <button class="admin-tab" data-tab="emails">Emails</button>
+        </div>
+
+        <!-- BLOG TAB -->
+        <div id="tab-blog">
+            <div class="admin-form-card">
+                <h2>New Blog Post</h2>
+                <p class="form-card-sub">Fill in the details below. Write each paragraph and attach a photo after it.
+                </p>
+                <div class="admin-msg" id="blog-msg"></div>
+                <div class="upload-progress">
+                    <div class="upload-progress-bar" id="blog-progress-bar"></div>
+                </div>
+
+                <p class="form-section-title">Post Details</p>
+                <div class="form-group">
+                    <label>Post Title *</label>
+                    <input type="text" id="blog-title" placeholder="e.g. A Weekend in Lucban">
+                </div>
+                <div class="form-group">
+                    <label>Short Preview (shown on cards) *</label>
+                    <input type="text" id="blog-preview" placeholder="One or two sentences that summarise the post...">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="blog-category">
+                        <option value="Food">Food</option>
+                        <option value="For Fun">For Fun</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cover Image *</label>
+                    <label class="img-upload-label" id="blog-cover-label">
+                        <span>📷 Choose cover photo</span>
+                        <input type="file" id="blog-cover-file" accept="image/*">
+                    </label>
+                    <img class="img-preview" id="blog-cover-preview" alt="Cover preview">
+                    <div class="img-filename" id="blog-cover-name"></div>
+                </div>
+
+                <p class="form-section-title">Article Content</p>
+                <p class="form-hint" style="margin-bottom:16px;">Write a paragraph, then attach a photo below it. Add as
+                    many sections as you need.</p>
+                <div class="content-blocks" id="blog-blocks"></div>
+                <button class="btn-add-block" id="blog-add-block">+ Add paragraph &amp; photo</button>
+
+                <div class="form-actions">
+                    <button class="btn-publish" id="blog-submit">PUBLISH POST</button>
+                    <button class="btn-clear" onclick="resetBlog()">CLEAR</button>
+                </div>
+            </div>
+            <div class="admin-list-card">
+                <h2>All Blog Posts</h2>
+                <div id="blog-list">
+                    <div class="admin-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DESTINATION TAB -->
+        <div id="tab-destination" style="display:none;">
+            <div class="admin-form-card">
+                <h2>New Destination</h2>
+                <p class="form-card-sub">Fill in the details below. Write each paragraph and attach a photo after it.
+                </p>
+                <div class="admin-msg" id="dest-msg"></div>
+                <div class="upload-progress">
+                    <div class="upload-progress-bar" id="dest-progress-bar"></div>
+                </div>
+
+                <p class="form-section-title">Destination Details</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Destination Title *</label>
+                        <input type="text" id="dest-title" placeholder="e.g. Lucban & Tayabas">
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="dest-type">
+                            <option value="Local">Local</option>
+                            <option value="International">International</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Region / Country</label>
+                        <input type="text" id="dest-region" placeholder="e.g. Quezon Province · Luzon  or  Thailand">
+                        <span class="form-hint">This appears as the label on the card.</span>
+                    </div>
+                    <div class="form-group" id="dest-island-group">
+                        <label>Island Group (Local only)</label>
+                        <select id="dest-island">
+                            <option value="">— not applicable —</option>
+                            <option value="Luzon">Luzon</option>
+                            <option value="Visayas">Visayas</option>
+                            <option value="Mindanao">Mindanao</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Short Preview (shown on cards) *</label>
+                    <input type="text" id="dest-preview" placeholder="One or two sentences about this destination...">
+                </div>
+                <div class="form-group">
+                    <label>Cover Image *</label>
+                    <label class="img-upload-label" id="dest-cover-label">
+                        <span>📷 Choose cover photo</span>
+                        <input type="file" id="dest-cover-file" accept="image/*">
+                    </label>
+                    <img class="img-preview" id="dest-cover-preview" alt="Cover preview">
+                    <div class="img-filename" id="dest-cover-name"></div>
+                </div>
+
+                <p class="form-section-title">Article Content</p>
+                <p class="form-hint" style="margin-bottom:16px;">Write a paragraph, then attach a photo below it. Add as
+                    many sections as you need.</p>
+                <div class="content-blocks" id="dest-blocks"></div>
+                <button class="btn-add-block" id="dest-add-block">+ Add paragraph &amp; photo</button>
+
+                <div class="form-actions">
+                    <button class="btn-publish" id="dest-submit">PUBLISH DESTINATION</button>
+                    <button class="btn-clear" onclick="resetDest()">CLEAR</button>
+                </div>
+            </div>
+            <div class="admin-list-card">
+                <h2>All Destinations</h2>
+                <div id="dest-list">
+                    <div class="admin-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GALLERY TAB -->
+        <div id="tab-gallery" style="display:none;">
+            <div class="admin-form-card">
+                <h2>Add Gallery Photos</h2>
+                <p class="form-card-sub">Choose as many photos as you like at once. All selected photos will share the
+                    same place and date label.</p>
+                <div class="admin-msg" id="gal-msg"></div>
+                <div class="upload-progress">
+                    <div class="upload-progress-bar" id="gal-progress-bar"></div>
+                </div>
+
+                <p class="form-section-title">Photo Details (applies to all photos below)</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Place / Caption *</label>
+                        <input type="text" id="gal-place" placeholder="e.g. Railay Beach, Krabi">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="text" id="gal-date-label" placeholder="e.g. March 2025">
+                    </div>
+                </div>
+
+                <p class="form-section-title">Photos</p>
+                <label class="gallery-drop-area" id="gal-drop-area">
+                    <input type="file" id="gal-files" accept="image/*" multiple>
+                    <div class="gallery-drop-icon">📷</div>
+                    <div class="gallery-drop-text">
+                        <strong>Click to choose photos</strong> or drag and drop them here<br>
+                        <span style="font-size:0.78rem;">You can select multiple at once</span>
+                    </div>
+                </label>
+                <div id="gal-count-wrap" style="display:none;">
+                    <span class="gallery-count-badge" id="gal-count">0 photos selected</span>
+                </div>
+                <div class="gallery-preview-grid" id="gal-preview-grid"></div>
+
+                <div class="form-actions">
+                    <button class="btn-publish" id="gal-submit">UPLOAD PHOTOS</button>
+                    <button class="btn-clear" onclick="resetGallery()">CLEAR</button>
+                </div>
+            </div>
+            <div class="admin-list-card">
+                <h2>All Gallery Photos</h2>
+                <div id="gal-list">
+                    <div class="admin-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMAILS TAB -->
+        <div id="tab-emails" style="display:none;">
+            <div class="admin-list-card">
+                <h2>Emails Received</h2>
+                <div id="emails-list">
+                    <div class="admin-empty">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /admin-wrap -->
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook"
+                    target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram"
+                    target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon"
+                    aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube"
+                    target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import {
+            getAll,
+            addItem,
+            uploadImage,
+            deleteItem,
+            updateItem,
+            formatDate,
+            supabase
+        } from "../js/supabase.js";
+
+        // ══════════════════════════════════════════════════════════════
+        // LOGOUT
+        // ══════════════════════════════════════════════════════════════
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.replace("admin-login.html");
+        });
+
+        // ══════════════════════════════════════════════════════════════
+        // TAB SWITCHING
+        // ══════════════════════════════════════════════════════════════
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                ['blog', 'destination', 'gallery', 'emails'].forEach(name => {
+                    const el = document.getElementById('tab-' + name);
+                    if (el) el.style.display = (tab.dataset.tab === name) ? 'block' : 'none';
+                });
+            });
+        });
+
+        // ══════════════════════════════════════════════════════════════
+        // HELPERS
+        // ══════════════════════════════════════════════════════════════
+        function showMsg(id, text, type) {
+            const el = document.getElementById(id);
+            el.textContent = text;
+            el.className = 'admin-msg ' + type;
+            if (type !== 'loading') setTimeout(() => { el.className = 'admin-msg'; }, 5000);
+        }
+
+        function showEditMsg(text, type) {
+            const el = document.getElementById('edit-msg');
+            el.textContent = text;
+            el.className = 'edit-admin-msg ' + type;
+            if (type !== 'loading') setTimeout(() => { el.className = 'edit-admin-msg'; }, 5000);
+        }
+
+        function setProgress(barId, pct) {
+            const bar = document.getElementById(barId);
+            const wrap = bar?.parentElement;
+            if (!wrap) return;
+            wrap.style.display = pct < 100 ? 'block' : 'none';
+            bar.style.width = pct + '%';
+        }
+
+        function imgPreviewSetup(fileInputId, previewId, nameId, labelId) {
+            const input = document.getElementById(fileInputId);
+            const preview = document.getElementById(previewId);
+            const nameEl = document.getElementById(nameId);
+            const label = document.getElementById(labelId);
+            input.addEventListener('change', () => {
+                const file = input.files[0];
+                if (!file) return;
+                nameEl.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = e => { preview.src = e.target.result; preview.classList.add('visible'); };
+                reader.readAsDataURL(file);
+                label.querySelector('span').textContent = '✓ ' + file.name;
+            });
+        }
+
+        function renderList(containerId, items, table, thumbField, titleField, metaFn) {
+            const el = document.getElementById(containerId);
+            if (!items.length) { el.innerHTML = '<div class="admin-empty">Nothing here yet.</div>'; return; }
+            const isBlogList = containerId === 'blog-list';
+            const isDestList = containerId === 'dest-list';
+            el.innerHTML = items.map(item => `
+            <div class="admin-post-row" id="row-${item.id}">
+                <img src="${item[thumbField] || ''}" class="admin-post-thumb" alt=""
+                     onerror="this.style.background='var(--lavender-mid)';this.removeAttribute('src')">
+                <div class="admin-post-info">
+                    <div class="admin-post-title">${item[titleField] || '—'}</div>
+                    <div class="admin-post-meta">${metaFn(item)}</div>
+                </div>
+                <div style="display:flex;gap:8px;flex-shrink:0;">
+                    ${(isBlogList || isDestList) ? `<button class="btn-edit" data-id="${item.id}" data-type="${isBlogList ? 'blog' : 'dest'}">EDIT</button>` : ''}
+                    <button class="btn-delete" data-id="${item.id}" data-table="${table}">DELETE</button>
+                </div>
+            </div>`).join('');
+
+            el.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Delete this item? This cannot be undone.')) return;
+                    await deleteItem(btn.dataset.table, btn.dataset.id);
+                    document.getElementById('row-' + btn.dataset.id)?.remove();
+                });
+            });
+
+            el.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.dataset.type === 'blog') {
+                        openBlogEditModal(btn.dataset.id, items);
+                    } else {
+                        openDestEditModal(btn.dataset.id, items);
+                    }
+                });
+            });
+        }
+
+        function renderEmailsList(items) {
+            const el = document.getElementById('emails-list');
+            if (!items.length) { el.innerHTML = '<div class="admin-empty">No emails yet.</div>'; return; }
+            el.innerHTML = items.map(item => `
+            <div class="admin-post-row" id="row-email-${item.id}">
+                <div class="admin-post-info">
+                    <div class="admin-post-title">${item.name || '—'} &mdash; <span style="font-weight:400;color:var(--purple-author)">${item.email || ''}</span></div>
+                    <div class="admin-post-meta" style="margin-top:4px;">${item.message || ''}</div>
+                    <div class="admin-post-meta" style="margin-top:3px;">${formatDate(item.created_at)}</div>
+                </div>
+                <button class="btn-delete" data-id="${item.id}" data-table="contacts">DELETE</button>
+            </div>`).join('');
+
+            el.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Delete this email? This cannot be undone.')) return;
+                    await deleteItem(btn.dataset.table, btn.dataset.id);
+                    document.getElementById('row-email-' + btn.dataset.id)?.remove();
+                });
+            });
+        }
+
+        async function loadLists() {
+            try {
+                const [blogs, dests, photos, emails] = await Promise.all([
+                    getAll('blogs'), getAll('destinations'), getAll('gallery'), getAll('contacts')
+                ]);
+                renderList('blog-list', blogs, 'blogs', 'cover_image', 'title',
+                    item => `${item.category || ''} · ${formatDate(item.created_at)}`);
+                renderList('dest-list', dests, 'destinations', 'cover_image', 'title',
+                    item => `${item.type || ''} · ${item.region || ''} · ${formatDate(item.created_at)}`);
+                renderList('gal-list', photos, 'gallery', 'image', 'place',
+                    item => `${item.date_label || ''} · ${formatDate(item.created_at)}`);
+                renderEmailsList(emails);
+            } catch (err) { console.error(err); }
+        }
+        loadLists();
+
+        imgPreviewSetup('blog-cover-file', 'blog-cover-preview', 'blog-cover-name', 'blog-cover-label');
+        imgPreviewSetup('dest-cover-file', 'dest-cover-preview', 'dest-cover-name', 'dest-cover-label');
+
+        // ══════════════════════════════════════════════════════════════
+        // CONTENT BLOCK BUILDER
+        // ══════════════════════════════════════════════════════════════
+        function makeBlock(prefix, index) {
+            const div = document.createElement('div');
+            div.className = 'content-block';
+            div.dataset.index = index;
+            div.innerHTML = `
+            <div class="content-block-header">
+                <span class="content-block-label">Section ${index + 1}</span>
+                <button class="btn-remove-block" type="button">Remove</button>
+            </div>
+            <div class="form-group">
+                <label>Paragraph</label>
+                <textarea class="block-para" placeholder="Write this section of the article..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Photo after this paragraph (optional)</label>
+                <label class="img-upload-label">
+                    <span>📷 Choose photo</span>
+                    <input type="file" class="block-img-input" accept="image/*">
+                </label>
+                <img class="img-preview block-img-preview" alt="">
+                <div class="img-filename block-img-name"></div>
+            </div>`;
+
+            div.querySelector('.btn-remove-block').addEventListener('click', () => div.remove());
+            div.querySelector('.block-img-input').addEventListener('change', function () {
+                const file = this.files[0];
+                if (!file) return;
+                div.querySelector('.block-img-name').textContent = file.name;
+                div.querySelector('label.img-upload-label span').textContent = '✓ ' + file.name;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = div.querySelector('.block-img-preview');
+                    img.src = e.target.result;
+                    img.classList.add('visible');
+                };
+                reader.readAsDataURL(file);
+            });
+            return div;
+        }
+
+        function initBlockBuilder(prefix, addBtnId, containerId) {
+            const container = document.getElementById(containerId);
+            const addBtn = document.getElementById(addBtnId);
+            addBtn.addEventListener('click', () => {
+                container.appendChild(makeBlock(prefix, container.children.length));
+            });
+            container.appendChild(makeBlock(prefix, 0));
+            return { container };
+        }
+
+        initBlockBuilder('blog', 'blog-add-block', 'blog-blocks');
+        initBlockBuilder('dest', 'dest-add-block', 'dest-blocks');
+
+        async function collectBlocks(container, folder, progressBarId, progressStart, progressEnd) {
+            const blocks = [...container.querySelectorAll('.content-block')];
+            const sections = [];
+            const step = (progressEnd - progressStart) / (blocks.length || 1);
+            for (let i = 0; i < blocks.length; i++) {
+                const block = blocks[i];
+                const para = block.querySelector('.block-para')?.value.trim() || '';
+                const fileInput = block.querySelector('.block-img-input');
+                let imageUrl = '';
+                if (fileInput?.files[0]) imageUrl = await uploadImage(fileInput.files[0], folder);
+                sections.push({ para, imageUrl });
+                setProgress(progressBarId, progressStart + step * (i + 1));
+            }
+            return sections;
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        // BLOG SUBMIT
+        // ══════════════════════════════════════════════════════════════
+        document.getElementById('blog-submit').addEventListener('click', async () => {
+            const title = document.getElementById('blog-title').value.trim();
+            const preview = document.getElementById('blog-preview').value.trim();
+            const category = document.getElementById('blog-category').value;
+            const coverFile = document.getElementById('blog-cover-file').files[0];
+
+            if (!title) { showMsg('blog-msg', 'Please enter a post title.', 'error'); return; }
+            if (!preview) { showMsg('blog-msg', 'Please enter a short preview.', 'error'); return; }
+            if (!coverFile) { showMsg('blog-msg', 'Please choose a cover image.', 'error'); return; }
+
+            const btn = document.getElementById('blog-submit');
+            btn.disabled = true;
+            showMsg('blog-msg', 'Uploading... please wait.', 'loading');
+
+            try {
+                setProgress('blog-progress-bar', 10);
+                const cover_image = await uploadImage(coverFile, 'blogs/covers');
+                setProgress('blog-progress-bar', 30);
+
+                const sections = await collectBlocks(
+                    document.getElementById('blog-blocks'),
+                    'blogs/content', 'blog-progress-bar', 30, 90
+                );
+
+                await addItem('blogs', { title, preview, category, cover_image, sections });
+
+                setProgress('blog-progress-bar', 100);
+                showMsg('blog-msg', 'Post published successfully!', 'success');
+                resetBlog();
+                loadLists();
+            } catch (err) {
+                showMsg('blog-msg', 'Something went wrong: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                setProgress('blog-progress-bar', 0);
+            }
+        });
+
+        window.resetBlog = function () {
+            document.getElementById('blog-title').value = '';
+            document.getElementById('blog-preview').value = '';
+            document.getElementById('blog-cover-file').value = '';
+            document.getElementById('blog-cover-preview').classList.remove('visible');
+            document.getElementById('blog-cover-name').textContent = '';
+            document.getElementById('blog-cover-label').querySelector('span').textContent = '📷 Choose cover photo';
+            const c = document.getElementById('blog-blocks');
+            c.innerHTML = '';
+            c.appendChild(makeBlock('blog', 0));
+            document.getElementById('blog-add-block').style.display = 'block';
+        };
+
+        // ══════════════════════════════════════════════════════════════
+        // DESTINATION SUBMIT
+        // ══════════════════════════════════════════════════════════════
+        document.getElementById('dest-submit').addEventListener('click', async () => {
+            const title = document.getElementById('dest-title').value.trim();
+            const preview = document.getElementById('dest-preview').value.trim();
+            const type = document.getElementById('dest-type').value;
+            const region = document.getElementById('dest-region').value.trim();
+            const island = document.getElementById('dest-island').value;
+            const coverFile = document.getElementById('dest-cover-file').files[0];
+
+            if (!title) { showMsg('dest-msg', 'Please enter a destination title.', 'error'); return; }
+            if (!preview) { showMsg('dest-msg', 'Please enter a short preview.', 'error'); return; }
+            if (!coverFile) { showMsg('dest-msg', 'Please choose a cover image.', 'error'); return; }
+
+            const btn = document.getElementById('dest-submit');
+            btn.disabled = true;
+            showMsg('dest-msg', 'Uploading... please wait.', 'loading');
+
+            try {
+                setProgress('dest-progress-bar', 10);
+                const cover_image = await uploadImage(coverFile, 'destinations/covers');
+                setProgress('dest-progress-bar', 30);
+
+                const sections = await collectBlocks(
+                    document.getElementById('dest-blocks'),
+                    'destinations/content', 'dest-progress-bar', 30, 90
+                );
+
+                await addItem('destinations', {
+                    title, preview, type, region, cover_image, sections,
+                    ...(type === 'Local' && island ? { island_group: island } : {})
+                });
+
+                setProgress('dest-progress-bar', 100);
+                showMsg('dest-msg', 'Destination published successfully!', 'success');
+                resetDest();
+                loadLists();
+            } catch (err) {
+                showMsg('dest-msg', 'Something went wrong: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                setProgress('dest-progress-bar', 0);
+            }
+        });
+
+        window.resetDest = function () {
+            ['dest-title', 'dest-region', 'dest-preview'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('dest-cover-file').value = '';
+            document.getElementById('dest-cover-preview').classList.remove('visible');
+            document.getElementById('dest-cover-name').textContent = '';
+            document.getElementById('dest-cover-label').querySelector('span').textContent = '📷 Choose cover photo';
+            const c = document.getElementById('dest-blocks');
+            c.innerHTML = '';
+            c.appendChild(makeBlock('dest', 0));
+            document.getElementById('dest-add-block').style.display = 'block';
+        };
+
+        // ══════════════════════════════════════════════════════════════
+        // GALLERY SUBMIT
+        // ══════════════════════════════════════════════════════════════
+        let galFiles = [];
+
+        const galInput = document.getElementById('gal-files');
+        const galGrid = document.getElementById('gal-preview-grid');
+        const galCountEl = document.getElementById('gal-count');
+        const galCountWrap = document.getElementById('gal-count-wrap');
+        const galDropArea = document.getElementById('gal-drop-area');
+
+        function renderGalPreviews() {
+            galCountWrap.style.display = galFiles.length ? 'block' : 'none';
+            galCountEl.textContent = galFiles.length + (galFiles.length === 1 ? ' photo selected' : ' photos selected');
+            galGrid.innerHTML = galFiles.map((file, i) => {
+                const url = URL.createObjectURL(file);
+                return `
+                <div class="gallery-thumb-wrap" id="gal-thumb-${i}">
+                    <img src="${url}" alt="">
+                    <button class="gallery-thumb-remove" data-i="${i}" type="button">✕</button>
+                </div>`;
+            }).join('');
+            galGrid.querySelectorAll('.gallery-thumb-remove').forEach(btn => {
+                btn.addEventListener('click', () => { galFiles.splice(parseInt(btn.dataset.i), 1); renderGalPreviews(); });
+            });
+        }
+
+        galInput.addEventListener('change', () => {
+            galFiles = [...galFiles, ...Array.from(galInput.files)];
+            galInput.value = '';
+            renderGalPreviews();
+        });
+        galDropArea.addEventListener('dragover', e => { e.preventDefault(); galDropArea.classList.add('dragover'); });
+        galDropArea.addEventListener('dragleave', () => galDropArea.classList.remove('dragover'));
+        galDropArea.addEventListener('drop', e => {
+            e.preventDefault();
+            galDropArea.classList.remove('dragover');
+            galFiles = [...galFiles, ...Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))];
+            renderGalPreviews();
+        });
+
+        document.getElementById('gal-submit').addEventListener('click', async () => {
+            const place = document.getElementById('gal-place').value.trim();
+            const date_label = document.getElementById('gal-date-label').value.trim();
+
+            if (!place) { showMsg('gal-msg', 'Please enter a place name.', 'error'); return; }
+            if (galFiles.length === 0) { showMsg('gal-msg', 'Please select at least one photo.', 'error'); return; }
+
+            const btn = document.getElementById('gal-submit');
+            btn.disabled = true;
+            showMsg('gal-msg', `Uploading ${galFiles.length} photo(s)... please wait.`, 'loading');
+
+            try {
+                for (let i = 0; i < galFiles.length; i++) {
+                    const pct = Math.round(((i + 1) / galFiles.length) * 100);
+                    const image = await uploadImage(galFiles[i], 'gallery');
+                    await addItem('gallery', { image, place, date_label });
+                    setProgress('gal-progress-bar', pct);
+                }
+                showMsg('gal-msg', `${galFiles.length} photo(s) uploaded successfully!`, 'success');
+                resetGallery();
+                loadLists();
+            } catch (err) {
+                showMsg('gal-msg', 'Something went wrong: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                setProgress('gal-progress-bar', 0);
+            }
+        });
+
+        window.resetGallery = function () {
+            document.getElementById('gal-place').value = '';
+            document.getElementById('gal-date-label').value = '';
+            galFiles = [];
+            renderGalPreviews();
+        };
+
+        // ══════════════════════════════════════════════════════════════
+        // BLOG EDIT MODAL
+        // ══════════════════════════════════════════════════════════════
+        let editingBlogId = null;
+        let editingDestId = null;
+
+        document.getElementById('edit-modal-close').addEventListener('click', () => {
+            document.getElementById('edit-modal-overlay').classList.remove('open');
+            editingBlogId = null;
+            editingDestId = null;
+        });
+        document.getElementById('edit-modal-overlay').addEventListener('click', e => {
+            if (e.target === document.getElementById('edit-modal-overlay')) {
+                document.getElementById('edit-modal-overlay').classList.remove('open');
+                editingBlogId = null;
+                editingDestId = null;
+            }
+        });
+
+        function openBlogEditModal(postId, allItems) {
+            const post = allItems.find(p => p.id === postId);
+            if (!post) return;
+
+            editingBlogId = postId;
+            editingDestId = null;
+
+            document.getElementById('edit-blog-fields').style.display = 'block';
+            document.getElementById('edit-dest-fields').style.display = 'none';
+
+            document.getElementById('edit-title').value = post.title || '';
+            document.getElementById('edit-preview').value = post.preview || '';
+            document.getElementById('edit-category').value = post.category || 'Food';
+            document.getElementById('edit-h2').textContent = 'Edit Blog Post';
+
+            renderEditSections(post.sections || []);
+            document.getElementById('edit-modal-overlay').classList.add('open');
+            showEditMsg('', '');
+        }
+
+        function openDestEditModal(destId, allItems) {
+            const dest = allItems.find(d => d.id === destId);
+            if (!dest) return;
+
+            editingDestId = destId;
+            editingBlogId = null;
+
+            document.getElementById('edit-blog-fields').style.display = 'none';
+            document.getElementById('edit-dest-fields').style.display = 'block';
+
+            document.getElementById('edit-title').value = dest.title || '';
+            document.getElementById('edit-preview').value = dest.preview || '';
+            document.getElementById('edit-dest-type').value = dest.type || 'Local';
+            document.getElementById('edit-dest-region').value = dest.region || '';
+            document.getElementById('edit-dest-island').value = dest.island_group || '';
+            document.getElementById('edit-h2').textContent = 'Edit Destination';
+
+            renderEditSections(dest.sections || []);
+            document.getElementById('edit-modal-overlay').classList.add('open');
+            showEditMsg('', '');
+        }
+
+        function renderEditSections(sections) {
+            const wrap = document.getElementById('edit-sections-wrap');
+            if (sections.length === 0) {
+                wrap.innerHTML = `
+                <div class="edit-section-block">
+                    <label>Section 1 — Paragraph</label>
+                    <textarea class="edit-para" placeholder="Write this section..."></textarea>
+                    <label style="margin-top:10px;">Section Image URL (leave blank to keep current)</label>
+                    <input type="text" class="edit-img-url" placeholder="https://... (leave blank to keep existing)" style="width:100%;padding:8px 12px;border:1.5px solid var(--lavender-mid);border-radius:8px;font-family:Poppins,sans-serif;font-size:0.84rem;outline:none;background:var(--lavender);">
+                </div>`;
+            } else {
+                wrap.innerHTML = sections.map((sec, i) => `
+                <div class="edit-section-block" data-sec="${i}">
+                    <label>Section ${i + 1} — Paragraph</label>
+                    <textarea class="edit-para" placeholder="Write this section...">${sec.para || ''}</textarea>
+                    <label style="margin-top:10px;">Section Image URL (leave blank to keep current)</label>
+                    <input type="text" class="edit-img-url" placeholder="https://... (leave blank to keep existing)"
+                        value="${sec.imageUrl || ''}"
+                        style="width:100%;padding:8px 12px;border:1.5px solid var(--lavender-mid);border-radius:8px;font-family:Poppins,sans-serif;font-size:0.84rem;outline:none;background:var(--lavender);">
+                    ${sec.imageUrl ? `<img src="${sec.imageUrl}" class="edit-section-img-preview visible" alt="">` : ''}
+                </div>`).join('');
+            }
+        }
+
+        document.getElementById('edit-save-btn').addEventListener('click', async () => {
+            const title = document.getElementById('edit-title').value.trim();
+            const preview = document.getElementById('edit-preview').value.trim();
+
+            if (!title) { showEditMsg('Please enter a title.', 'error'); return; }
+            if (!preview) { showEditMsg('Please enter a preview.', 'error'); return; }
+
+            const blocks = document.querySelectorAll('#edit-sections-wrap .edit-section-block');
+            const sections = [...blocks].map(block => ({
+                para: block.querySelector('.edit-para')?.value.trim() || '',
+                imageUrl: block.querySelector('.edit-img-url')?.value.trim() || ''
+            }));
+
+            showEditMsg('Saving changes...', 'loading');
+            document.getElementById('edit-save-btn').disabled = true;
+
+            try {
+                if (editingBlogId) {
+                    await updateItem('blogs', editingBlogId, { title, preview, category: document.getElementById('edit-category').value, sections });
+                } else if (editingDestId) {
+                    const type = document.getElementById('edit-dest-type').value;
+                    const region = document.getElementById('edit-dest-region').value.trim();
+                    const island_group = document.getElementById('edit-dest-island').value;
+
+                    await updateItem('destinations', editingDestId, {
+                        title, preview, type, region, sections,
+                        ...(type === 'Local' && island_group ? { island_group } : {})
+                    });
+                }
+
+                showEditMsg('Changes saved successfully!', 'success');
+                setTimeout(() => {
+                    document.getElementById('edit-modal-overlay').classList.remove('open');
+                }, 1200);
+                loadLists();
+            } catch (err) {
+                showEditMsg('Error: ' + err.message, 'error');
+            } finally {
+                document.getElementById('edit-save-btn').disabled = false;
+            }
+        });
+
+    </script>
+
+    <!-- ── EDIT MODAL (BLOG & DESTINATION) ── -->
+    <div class="edit-modal-overlay" id="edit-modal-overlay">
+        <div class="edit-modal">
+            <button class="edit-modal-close" id="edit-modal-close">✕</button>
+            <h2 id="edit-h2">Edit Post</h2>
+            <div class="edit-admin-msg" id="edit-msg"></div>
+
+            <!-- Common fields -->
+            <div class="form-group">
+                <label
+                    style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dark);text-transform:uppercase;">Title
+                    *</label>
+                <input type="text" id="edit-title">
+            </div>
+            <div class="form-group">
+                <label
+                    style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dark);text-transform:uppercase;">Short
+                    Preview *</label>
+                <input type="text" id="edit-preview">
+            </div>
+
+            <!-- BLOG-SPECIFIC fields -->
+            <div id="edit-blog-fields">
+                <div class="form-group">
+                    <label
+                        style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dark);text-transform:uppercase;">Category</label>
+                    <select id="edit-category">
+                        <option value="Food">Food</option>
+                        <option value="For Fun">For Fun</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- DESTINATION-SPECIFIC fields -->
+            <div id="edit-dest-fields" style="display:none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label
+                            style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dark);text-transform:uppercase;">Type
+                            *</label>
+                        <select id="edit-dest-type">
+                            <option value="Local">Local</option>
+                            <option value="International">International</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label
+                            style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dark);text-transform:uppercase;">Region
+                            / Country</label>
+                        <input type="text" id="edit-dest-region" placeholder="e.g. Quezon Province · Luzon">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label
+                        style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dark);text-transform:uppercase;">Island
+                        Group (Local only)</label>
+                    <select id="edit-dest-island">
+                        <option value="">— not applicable —</option>
+                        <option value="Luzon">Luzon</option>
+                        <option value="Visayas">Visayas</option>
+                        <option value="Mindanao">Mindanao</option>
+                    </select>
+                </div>
+            </div>
+
+            <div
+                style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple-author);border-bottom:1px solid var(--lavender-mid);padding-bottom:8px;margin:24px 0 18px;">
+                Article Sections
+            </div>
+            <div class="edit-sections" id="edit-sections-wrap"></div>
+
+            <div class="edit-modal-actions">
+                <button class="btn-publish" id="edit-save-btn">SAVE CHANGES</button>
+                <button class="btn-clear"
+                    onclick="document.getElementById('edit-modal-overlay').classList.remove('open')">CANCEL</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

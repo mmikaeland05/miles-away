@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | Miles Away</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <h1><a href="../index.html" class="brand">Miles Away</a></h1>
+        <div class="navigation">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="navigation-items" id="nav-menu">
+                <a href="../index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="destinations.html">Destinations</a>
+                <a href="about.html">About</a>
+                <a href="gallery.html" style="color: var(--dark-pink);">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            hamburger.addEventListener('click', () => { navMenu.classList.toggle('open'); hamburger.classList.toggle('active'); });
+            navMenu.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { navMenu.classList.remove('open'); hamburger.classList.remove('active'); }); });
+        </script>
+    </header>
+
+    <section class="gallery-banner">
+        <img src="../media/gallery-banner.png" class="gallery-banner-img" alt="Gallery Banner">
+        <div class="gallery-banner-text">
+            <span class="eyebrow">MILES AWAY</span>
+            <h1>My Gallery</h1>
+            <p>A visual diary — every photo tells the story of a moment I didn't want to forget.</p>
+        </div>
+    </section>
+
+    <main class="gallery-main">
+        <div class="gallery-grid-page" id="gallery-grid">
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+            <div class="gal-skeleton"></div>
+        </div>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightbox-close">✕</button>
+        <img src="" alt="" class="lightbox-img" id="lightbox-img">
+        <div class="lightbox-info">
+            <span class="lightbox-place" id="lightbox-place"></span>
+            <span class="lightbox-date" id="lightbox-date"></span>
+        </div>
+    </div>
+
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon" aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { getAll, formatDate } from "../js/supabase.js";
+
+        const grid = document.getElementById('gallery-grid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxPlace = document.getElementById('lightbox-place');
+        const lightboxDate = document.getElementById('lightbox-date');
+        const lightboxClose = document.getElementById('lightbox-close');
+
+        function closeLightbox() { lightbox.classList.remove('open'); document.body.style.overflow = ''; }
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+        // fixes illegal return ──
+        async function loadGallery() {
+            try {
+                const photos = (await getAll('gallery')).reverse();
+
+                if (photos.length === 0) {
+                    grid.innerHTML = '<p style="color:var(--text-light);font-size:0.88rem;text-align:center;grid-column:1/-1;padding:40px">No photos yet.</p>';
+                    return;
+                }
+
+                grid.innerHTML = photos.map(photo => `
+                    <div class="gal-item"
+                         data-place="${photo.place || ''}"
+                         data-date="${photo.date_label || formatDate(photo.post_date || photo.created_at)}"
+                         data-src="${photo.image || ''}">
+                        <img src="${photo.image || ''}" alt="${photo.place || 'Gallery photo'}"
+                             onerror="this.parentElement.style.background='var(--lavender-mid)';this.remove()">
+                        <div class="gal-overlay">
+                            <span class="gal-place">${photo.place || ''}</span>
+                            <span class="gal-date">${photo.date_label || formatDate(photo.post_date || photo.created_at)}</span>
+                        </div>
+                    </div>`).join('');
+
+                document.querySelectorAll('.gal-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        lightboxImg.src = item.dataset.src || '';
+                        lightboxImg.alt = item.dataset.place || '';
+                        lightboxPlace.textContent = item.dataset.place || '';
+                        lightboxDate.textContent = item.dataset.date || '';
+                        lightbox.classList.add('open');
+                        document.body.style.overflow = 'hidden';
+                    });
+                });
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<p style="color:var(--text-light);font-size:0.88rem;text-align:center;grid-column:1/-1;padding:40px">Could not load gallery.</p>';
+            }
+        }
+
+        loadGallery();
+    </script>
+</body>
+
+</html>

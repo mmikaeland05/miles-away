@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations | Miles Away</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <h1><a href="../index.html" class="brand">Miles Away</a></h1>
+        <div class="navigation">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="navigation-items" id="nav-menu">
+                <a href="../index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="destinations.html" style="color: var(--dark-pink);">Destinations</a>
+                <a href="about.html">About</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('open');
+                hamburger.classList.toggle('active');
+            });
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('open');
+                    hamburger.classList.remove('active');
+                });
+            });
+        </script>
+    </header>
+
+    <!-- BANNER -->
+    <section class="dest-banner">
+        <img src="../media/destinations-banner.png" class="dest-banner-img" alt="Destinations Banner">
+        <div class="dest-banner-text">
+            <span class="eyebrow">MILES AWAY</span>
+            <h1>Destinations</h1>
+            <p>Every place has a story. Here are the ones that left a mark on me.</p>
+        </div>
+    </section>
+
+    <!-- STATS STRIP — auto-counted from Firebase -->
+    <div class="dest-stats">
+        <div class="stat-item">
+            <div class="stat-number" id="stat-countries">—</div>
+            <div class="stat-label">International</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" id="stat-local">—</div>
+            <div class="stat-label">Local Trips</div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="dest-main">
+
+        <!-- LOCAL DESTINATIONS -->
+        <div class="dest-section-label" id="local">
+            <h2>Local Travels</h2>
+            <div class="label-line"></div>
+            <span class="label-tag">PHILIPPINES</span>
+        </div>
+
+        <!-- LOCAL FILTER TABS -->
+        <div class="local-filters">
+            <button class="local-filter-btn active" data-local-filter="all">All</button>
+            <button class="local-filter-btn" data-local-filter="Luzon">Luzon</button>
+            <button class="local-filter-btn" data-local-filter="Visayas">Visayas</button>
+            <button class="local-filter-btn" data-local-filter="Mindanao">Mindanao</button>
+        </div>
+
+        <div class="dest-grid" id="local-grid">
+            <div class="dest-loading">Loading local destinations...</div>
+        </div>
+        <div class="dest-pagination" id="local-pagination" style="display:none;">
+            <button class="dest-page-btn" id="local-prev">← PREV</button>
+            <span class="dest-page-info" id="local-page-info"></span>
+            <button class="dest-page-btn" id="local-next">NEXT →</button>
+        </div>
+
+        <!-- INTERNATIONAL DESTINATIONS -->
+        <div class="dest-section-label" id="international">
+            <h2>International Travels</h2>
+            <div class="label-line"></div>
+            <span class="label-tag">ABROAD</span>
+        </div>
+
+        <div class="dest-grid" id="intl-grid">
+            <div class="dest-loading">Loading international destinations...</div>
+        </div>
+        <div class="dest-pagination" id="intl-pagination" style="display:none;">
+            <button class="dest-page-btn" id="intl-prev">← PREV</button>
+            <span class="dest-page-info" id="intl-page-info"></span>
+            <button class="dest-page-btn" id="intl-next">NEXT →</button>
+        </div>
+
+    </main>
+
+    <!-- BUCKET LIST -->
+    <section class="bucket-section">
+        <h2 class="section-heading">On My Bucket List</h2>
+        <p class="bucket-sub">Places I haven't been to yet — but I will.</p>
+        <div class="bucket-grid">
+            <div class="bucket-item"><span class="bucket-dot"></span> Boracay</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Cebu</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Japan</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> South Korea</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Italy</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Siargao</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> La Union</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Greece</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Palawan</div>
+            <div class="bucket-item"><span class="bucket-dot"></span> Switzerland</div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook"
+                    target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram"
+                    target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon"
+                    aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube"
+                    target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { getAll, formatDate } from "../js/supabase.js";
+
+        const PER_PAGE = 6;
+
+        // ── CARD HTML ──────────────────────────────
+        function destCard(post) {
+            return `
+                <a href="post.html?col=destinations&id=${post.id}" class="dest-card">
+                    <img src="${post.cover_image || ''}" alt="${post.title}" class="dest-card-img"
+                         onerror="this.style.background='var(--purple-author)';this.removeAttribute('src')">
+                    <div class="dest-card-info">
+                        <div class="dest-card-country">${post.region || post.country || ''}</div>
+                        <div class="dest-card-name">${post.title}</div>
+                        <div class="dest-card-meta">
+                            <span>${post.preview ? '· ' + post.preview.substring(0, 60) + '…' : ''}</span>
+                        </div>
+                    </div>
+                </a>`;
+        }
+
+        // ── PAGINATION SETUP ───────────────────────
+        function setupPagination(allItems, gridEl, paginationEl, prevEl, nextEl, infoEl, activeFilter) {
+            const filtered = activeFilter === 'all'
+                ? allItems
+                : allItems.filter(p => p.island_group === activeFilter);
+
+            let page = 0;
+            const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+            function render(idx) {
+                page = idx;
+                const slice = filtered.slice(idx * PER_PAGE, (idx + 1) * PER_PAGE);
+                gridEl.innerHTML = slice.length
+                    ? slice.map(destCard).join('')
+                    : '<div class="dest-loading">No destinations yet in this category.</div>';
+                infoEl.textContent = totalPages > 1 ? `Page ${idx + 1} of ${totalPages}` : '';
+                prevEl.disabled = idx === 0;
+                nextEl.disabled = idx >= totalPages - 1;
+            }
+
+            render(0);
+
+            if (totalPages > 1) {
+                paginationEl.style.display = 'flex';
+                prevEl.onclick = () => { render(page - 1); };
+                nextEl.onclick = () => { render(page + 1); };
+            } else {
+                paginationEl.style.display = 'none';
+            }
+
+            return filtered.length;
+        }
+
+        try {
+            const all = await getAll('destinations');
+
+            const local = all.filter(p => p.type === 'Local');
+            const intl = all.filter(p => p.type === 'International');
+
+            // ── STATS ────────────────────────────
+            const countries = new Set(intl.map(p => p.region).filter(Boolean));
+            document.getElementById('stat-countries').textContent = countries.size || '0';
+            document.getElementById('stat-local').textContent = local.length || '0';
+
+            // ── LOCAL GRID ───────────────────────
+            const localGrid = document.getElementById('local-grid');
+            const localPagi = document.getElementById('local-pagination');
+            const localPrev = document.getElementById('local-prev');
+            const localNext = document.getElementById('local-next');
+            const localInfo = document.getElementById('local-page-info');
+
+            let currentLocalFilter = 'all';
+
+            function refreshLocal() {
+                setupPagination(local, localGrid, localPagi, localPrev, localNext, localInfo, currentLocalFilter);
+            }
+
+            refreshLocal();
+
+            // Local filter tab clicks
+            document.querySelectorAll('.local-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.local-filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLocalFilter = btn.dataset.localFilter;
+                    refreshLocal();
+                });
+            });
+
+            // ── INTL GRID ────────────────────────
+            const intlGrid = document.getElementById('intl-grid');
+            const intlPagi = document.getElementById('intl-pagination');
+            const intlPrev = document.getElementById('intl-prev');
+            const intlNext = document.getElementById('intl-next');
+            const intlInfo = document.getElementById('intl-page-info');
+
+            setupPagination(intl, intlGrid, intlPagi, intlPrev, intlNext, intlInfo, 'all');
+
+            // ── SCROLL TO SECTION VIA HASH ───────
+            const hash = window.location.hash;
+            if (hash) {
+                setTimeout(() => {
+                    const el = document.querySelector(hash);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById('local-grid').innerHTML = '<div class="dest-loading">Could not load destinations.</div>';
+            document.getElementById('intl-grid').innerHTML = '<div class="dest-loading">Could not load destinations.</div>';
+        }
+    </script>
+</body>
+
+</html>

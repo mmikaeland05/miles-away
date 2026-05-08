@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miles Away | Travel Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .posts-slider-wrap {
+            position: relative;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            text-align: left;
+        }
+
+        .slider-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .slider-btn {
+            background: white;
+            border: 2px solid var(--lavender-mid);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--dark-plum);
+            transition: background 0.2s, border-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-btn:hover {
+            background: var(--dark-plum);
+            color: white;
+            border-color: var(--dark-plum);
+        }
+
+        .slider-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .slider-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--lavender-mid);
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            padding: 0;
+        }
+
+        .slider-dot.active {
+            background: var(--dark-plum);
+        }
+
+        .posts-loading {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.88rem;
+            padding: 40px;
+            grid-column: 1/-1;
+        }
+
+        @media (max-width: 900px) {
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1><a href="#" class="brand">Miles Away</a></h1>
+        <div class="navigation">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="navigation-items" id="nav-menu">
+                <a href="homepage.html" style="color: var(--dark-pink);">Home</a>
+                <a href="html/blog.html">Blog</a>
+                <a href="html/destinations.html">Destinations</a>
+                <a href="html/about.html">About</a>
+                <a href="html/gallery.html">Gallery</a>
+                <a href="html/contact.html">Contact</a>
+            </nav>
+        </div>
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('open');
+                hamburger.classList.toggle('active');
+            });
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('open');
+                    hamburger.classList.remove('active');
+                });
+            });
+        </script>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop>
+            <source src="media/car-ride.mp4" type="video/mp4">
+        </video>
+        <div class="hero-left">
+            <h1 class="hero-title">WELCOME TO</h1>
+            <h2 class="hero-script">Miles Away</h2>
+            <h2 class="hero-tagline">Travels. Memories. Milestones.</h2>
+            <h3 class="hero-eyebrow">— A PERSONAL TRAVEL JOURNAL —</h3>
+            <p class="hero-desc">Not all journeys are measured in distance—some are found in moments and memories.
+                Miles Away is my journal of places, stories, and lessons along the way.</p>
+            <a href="html/blog.html" class="btn-primary">EXPLORE POSTS</a>
+        </div>
+        <div class="hero-right">
+            <div class="photo-frame frame-main">
+                <img src="media/plane-ride.png" alt="Travel photo 1" class="img-main">
+            </div>
+            <div class="photo-frame frame-small">
+                <img src="media/strawberry.png" alt="Travel photo 2" class="img-small">
+            </div>
+        </div>
+    </section>
+
+    <!-- LATEST POSTS -->
+    <section class="latest-posts">
+        <h2 class="section-heading">Latest Posts</h2>
+        <div class="posts-slider-wrap">
+            <div class="posts-grid" id="latest-posts-grid">
+                <div class="posts-loading">Loading latest posts...</div>
+            </div>
+            <div class="slider-controls" id="slider-controls" style="display:none;">
+                <button class="slider-btn" id="slider-prev">&#8592;</button>
+                <div class="slider-dots" id="slider-dots"></div>
+                <button class="slider-btn" id="slider-next">&#8594;</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- AUTHOR INTRO -->
+    <section class="author-intro">
+        <div class="author-images">
+            <img src="media/author.png" alt="Author photo 1" class="author-img-top">
+        </div>
+        <div class="author-text">
+            <h2 class="author-heading">Hi, I'm Mikaela Durana!</h2>
+            <p>I’m a second-year Computer Engineering student and a beginner programmer with a growing love for travel
+                and storytelling. <br><br>
+
+                I started Miles Away as a personal blog project for one of my courses—something I originally built as a
+                requirement, but now plan to continue and expand as I explore more places and experiences. <br><br>
+
+                I may not have traveled internationally much yet, but it’s one of my biggest goals in life to see the
+                world, one place at a time. <br><br>
+
+                I’m currently based in Quezon Province, Philippines, and most of my stories begin right here at home, with my family.
+                <br><br>
+
+                All of the writing and photos on this site come from my own personal experiences—every memory, every
+                lesson, and every mile traveled. <br><br>
+
+                I also keep a growing bucket list of destinations I hope to visit someday… and slowly, I’m working my
+                way through it.</p>
+            <a href="html/about.html" class="btn-primary" style="margin-top:20px;display:inline-block;">ABOUT ME</a>
+        </div>
+    </section>
+
+    <!-- DESTINATIONS -->
+    <section class="destinations">
+        <h2 class="section-heading">Destinations</h2>
+        <div class="destinations-grid">
+            <div class="dest-stack">
+                <div class="polaroid polaroid-back">
+                    <img src="media/local-2.png" alt="Local 2">
+                </div>
+                <a href="html/destinations.html#local" class="polaroid polaroid-front" style="text-decoration:none;">
+                    <img src="media/local-1.png" alt="Local 1">
+                    <span class="polaroid-label">LOCAL TRAVELS</span>
+                </a>
+            </div>
+            <div class="dest-stack">
+                <div class="polaroid polaroid-back">
+                    <img src="media/international.png" alt="International 2">
+                </div>
+                <a href="html/destinations.html#international" class="polaroid polaroid-front"
+                    style="text-decoration:none;">
+                    <img src="media/passport.png" alt="International 1">
+                    <span class="polaroid-label">INTERNATIONAL TRAVELS</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY — static display -->
+    <section class="gallery">
+        <h2 class="section-heading">My Gallery</h2>
+        <div class="gallery-grid">
+            <img src="media/gallery1.png" alt="Gallery Image 1" class="gallery-main">
+            <div class="gallery-small-grid">
+                <img src="media/gallery2.png" alt="Gallery Image 2">
+                <img src="media/gallery3.png" alt="Gallery Image 3">
+                <img src="media/gallery4.png" alt="Gallery Image 4">
+                <img src="media/gallery5.png" alt="Gallery Image 5">
+                <img src="media/gallery6.png" alt="Gallery Image 6">
+                <img src="media/gallery7.png" alt="Gallery Image 7">
+            </div>
+        </div>
+        <a href="html/gallery.html" class="btn-primary btn-pink" style="margin-top:28px;display:inline-block;">See My
+            Gallery</a>
+    </section>
+
+    <div class="all-footer">
+        <footer>
+            <h2 class="footer-brand">Miles Away</h2>
+            <p class="footer-tagline">Travels. Memories. Milestones.</p>
+            <hr class="footer-divider">
+            <div class="footer-socials">
+                <a href="https://www.facebook.com/aleakim.2515" class="social-icon" aria-label="Facebook"
+                    target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/emem.kae" class="social-icon" aria-label="Instagram"
+                    target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@mkaela_934?is_from_webapp=1&sender_device=pc" class="social-icon"
+                    aria-label="TikTok" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@mariamikaelananawadurana6225" class="social-icon" aria-label="YouTube"
+                    target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>Copyright © 2026 Miles Away | All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { getAll, formatDate } from "./js/supabase.js";
+
+        const grid = document.getElementById('latest-posts-grid');
+        const controls = document.getElementById('slider-controls');
+        const dotsWrap = document.getElementById('slider-dots');
+        const prevBtn = document.getElementById('slider-prev');
+        const nextBtn = document.getElementById('slider-next');
+
+        let pages = [];
+        let pageIndex = 0;
+
+        function cardHTML(post, col) {
+            const link = `html/post.html?col=${col}&id=${post.id}`;
+            return `
+            <a href="${link}" class="card" style="text-decoration:none;">
+                <img src="${post.cover_image || ''}" alt="${post.title}" class="card-img"
+                     onerror="this.style.background='var(--purple-header)';this.removeAttribute('src')">
+                <div class="card-content">
+                    <h3>${post.title}</h3>
+                    <p>${post.preview || ''}</p>
+                    <span class="btn-read">READ MORE</span>
+                </div>
+            </a>`;
+        }
+
+        function showPage(idx) {
+            pageIndex = idx;
+            grid.innerHTML = pages[idx].map(p => cardHTML(p, p._col)).join('');
+            document.querySelectorAll('.slider-dot').forEach((d, i) =>
+                d.classList.toggle('active', i === idx));
+            prevBtn.disabled = idx === 0;
+            nextBtn.disabled = idx === pages.length - 1;
+        }
+
+        function chunk(arr, size) {
+            const out = [];
+            for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+            return out;
+        }
+
+        async function loadPosts() {
+            try {
+                const [blogs, dests] = await Promise.all([
+                    getAll('blogs'),
+                    getAll('destinations')
+                ]);
+                blogs.forEach(p => p._col = 'blogs');
+                dests.forEach(p => p._col = 'destinations');
+
+                const all = [...blogs, ...dests].sort((a, b) =>
+                    new Date(b.created_at) - new Date(a.created_at));
+
+                if (all.length === 0) {
+                    grid.innerHTML = '<p class="posts-loading">No posts yet. Check back soon!</p>';
+                    return;
+                }
+
+                pages = chunk(all, 3);
+                pages.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+                    dot.addEventListener('click', () => showPage(i));
+                    dotsWrap.appendChild(dot);
+                });
+
+                showPage(0);
+
+                if (pages.length > 1) {
+                    controls.style.display = 'flex';
+                    prevBtn.addEventListener('click', () => showPage(pageIndex - 1));
+                    nextBtn.addEventListener('click', () => showPage(pageIndex + 1));
+                }
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<p class="posts-loading">Could not load posts.</p>';
+            }
+        }
+
+        loadPosts();
+    </script>
+</body>
+
+</html>
